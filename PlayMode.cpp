@@ -66,6 +66,8 @@ PlayMode::PlayMode()
     if (scene.cameras.size() != 1)
         throw std::runtime_error("Expecting scene to have exactly one camera, but it has " + std::to_string(scene.cameras.size()));
     camera = &scene.cameras.front();
+
+    text.init();
 }
 
 PlayMode::~PlayMode()
@@ -126,10 +128,12 @@ void PlayMode::update(float elapsed)
         if (left.pressed && !right.pressed && can_left) {
             action_sound = Sound::play_3D(*action_sample, volume, cameraLeft, radius);
             can_left = false;
+            text.set_text("left");
         }
         if (!left.pressed && right.pressed && can_right) {
             action_sound = Sound::play_3D(*action_sample, volume, cameraRight, radius);
             can_right = false;
+            text.set_text("right");
         }
     }
 
@@ -188,5 +192,13 @@ void PlayMode::draw(glm::uvec2 const& drawable_size)
             glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
             glm::u8vec4(0xff, 0xff, 0xff, 0x00));
     }
+
+    {
+        float x = (float)drawable_size.x * (200.0f / 1280.0f);
+        float y = (float)drawable_size.y * (200.0f / 720.0f);
+        float width = (float)drawable_size.x * (800.0f / 1280.0f);
+        text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+    }
+
     GL_ERRORS();
 }
