@@ -35,8 +35,8 @@ Load<Scene> hexapod_scene(LoadTagDefault, []() -> Scene const* {
     });
 });
 
-Load<Sound::Sample> dusty_floor_sample(LoadTagDefault, []() -> Sound::Sample const* {
-    return new Sound::Sample(data_path("dusty-floor.opus"));
+Load<Sound::Sample> action_sample(LoadTagDefault, []() -> Sound::Sample const* {
+    return new Sound::Sample(data_path("alien.opus"));
 });
 
 PlayMode::PlayMode()
@@ -66,10 +66,6 @@ PlayMode::PlayMode()
     if (scene.cameras.size() != 1)
         throw std::runtime_error("Expecting scene to have exactly one camera, but it has " + std::to_string(scene.cameras.size()));
     camera = &scene.cameras.front();
-
-    // start music loop playing:
-    //  (note: position will be over-ridden in update())
-    leg_tip_loop = Sound::loop_3D(*dusty_floor_sample, 1.0f, get_leg_tip_position(), 10.0f);
 }
 
 PlayMode::~PlayMode()
@@ -99,9 +95,11 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
     } else if (evt.type == SDL_KEYUP) {
         if (evt.key.keysym.sym == SDLK_a || evt.key.keysym.sym == SDLK_LEFT) {
             left.pressed = false;
+            can_left = true;
             return true;
         } else if (evt.key.keysym.sym == SDLK_d || evt.key.keysym.sym == SDLK_RIGHT) {
             right.pressed = false;
+            can_right = true;
             return true;
         } else if (evt.key.keysym.sym == SDLK_RETURN) {
             select.pressed = false;
@@ -115,38 +113,24 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
 void PlayMode::update(float elapsed)
 {
 
-    // slowly rotates through [0,1):
-    wobble += elapsed / 10.0f;
-    wobble -= std::floor(wobble);
-
-    hip->rotation = hip_base_rotation * glm::angleAxis(glm::radians(5.0f * std::sin(wobble * 2.0f * float(M_PI))), glm::vec3(0.0f, 1.0f, 0.0f));
-    upper_leg->rotation = upper_leg_base_rotation * glm::angleAxis(glm::radians(7.0f * std::sin(wobble * 2.0f * 2.0f * float(M_PI))), glm::vec3(0.0f, 0.0f, 1.0f));
-    lower_leg->rotation = lower_leg_base_rotation * glm::angleAxis(glm::radians(10.0f * std::sin(wobble * 3.0f * 2.0f * float(M_PI))), glm::vec3(0.0f, 0.0f, 1.0f));
-
-    // move sound to follow leg tip position:
-    leg_tip_loop->set_position(get_leg_tip_position(), 1.0f / 60.0f);
-
-    // move camera:
+    // inputs logic
     {
-
-        // combine inputs into a move:
-        constexpr float PlayerSpeed = 30.0f;
-        glm::vec2 move = glm::vec2(0.0f);
-        if (left.pressed && !right.pressed)
-            move.x = -1.0f;
-        if (!left.pressed && right.pressed)
-            move.x = 1.0f;
-
-        // make it so that moving diagonally doesn't go faster:
-        if (move != glm::vec2(0.0f))
-            move = glm::normalize(move) * PlayerSpeed * elapsed;
-
         glm::mat4x3 frame = camera->transform->make_local_to_parent();
-        glm::vec3 right = frame[0];
+        glm::vec3 cam_right = frame[0];
         // glm::vec3 up = frame[1];
-        glm::vec3 forward = -frame[2];
-
-        camera->transform->position += move.x * right + move.y * forward;
+        // glm::vec3 forward = -frame[2];
+        glm::vec3 cameraRight = camera->transform->position + cam_right * 2.f;
+        glm::vec3 cameraLeft = camera->transform->position + cam_right * -2.f;
+        const float volume = 2.f;
+        const float radius = 0.1f;
+        if (left.pressed && !right.pressed && can_left) {
+            action_sound = Sound::play_3D(*action_sample, volume, cameraLeft, radius);
+            can_left = false;
+        }
+        if (!left.pressed && right.pressed && can_right) {
+            action_sound = Sound::play_3D(*action_sample, volume, cameraRight, radius);
+            can_right = false;
+        }
     }
 
     { // update listener to camera position:
@@ -205,10 +189,4 @@ void PlayMode::draw(glm::uvec2 const& drawable_size)
             glm::u8vec4(0xff, 0xff, 0xff, 0x00));
     }
     GL_ERRORS();
-}
-
-glm::vec3 PlayMode::get_leg_tip_position()
-{
-    // the vertex position here was read from the model in blender:
-    return lower_leg->make_local_to_world() * glm::vec4(-1.26137f, -11.861f, 0.0f, 1.0f);
 }
