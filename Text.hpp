@@ -206,7 +206,7 @@ struct Text {
         float char_y = pos.y;
 
         // this loop was taken almost verbatim from https://learnopengl.com/In-Practice/Text-Rendering
-        for (int i = 0; i < num_chars; i++) {
+        for (unsigned int i = 0; i < num_chars; i++) {
             hb_codepoint_t char_req = glyph_info[i].codepoint;
             if (chars.find(char_req) == chars.end()) { // not already loaded
                 Character ch = Character::Load(char_req, typeface);
