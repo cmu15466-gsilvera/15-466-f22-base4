@@ -34,7 +34,7 @@ struct Character {
     {
         // taken almost verbatim from https://learnopengl.com/In-Practice/Text-Rendering
         if (FT_Load_Glyph(typeface, request, FT_LOAD_RENDER))
-            throw std::runtime_error("ERROR::FREETYTPE: Failed to load Glyph: " + std::to_string(request));
+            throw std::runtime_error("Failed to load glyph: " + std::to_string(request));
         GLuint tex;
         glGenTextures(1, &tex);
         glBindTexture(GL_TEXTURE_2D, tex);
@@ -89,9 +89,9 @@ struct Text {
         {
             FT_Library ftlibrary;
             if (FT_Init_FreeType(&ftlibrary))
-                throw std::runtime_error("ERROR::FREETYPE: Could not init FreeType Library");
+                throw std::runtime_error("Failed to initialize FreeType library");
             if (FT_New_Face(ftlibrary, const_cast<char*>(data_path(text_file).c_str()), 0, &typeface))
-                throw std::runtime_error("ERROR::FREETYPE: Failed to load font");
+                throw std::runtime_error("Failed to load font from typeface \"" + text_file + "\"");
         }
 
         // create shaders for rendering
@@ -158,7 +158,7 @@ struct Text {
         hb_buffer_set_script(hb_buffer, HB_SCRIPT_LATIN);
         hb_buffer_set_language(hb_buffer, hb_language_from_string("en", -1));
         if (hb_typeface == nullptr) {
-            throw std::runtime_error("harfbuzz typeface is null!");
+            throw std::runtime_error("Harfbuzz typeface is null!");
         }
         hb_shape(hb_typeface, hb_buffer, NULL, 0);
     }
@@ -171,7 +171,7 @@ struct Text {
             // std::cout << "setting font size to " << font_size << " and scale to " << font_scale << std::endl;
             FT_Set_Char_Size(typeface, 0, (unsigned int)font_size * font_scale, 0, 0); // 64 units per pixel
             if (FT_Load_Char(typeface, 'X', FT_LOAD_RENDER))
-                throw std::runtime_error("ERROR::FREETYTPE: Failed to load Glyph");
+                throw std::runtime_error("Failed to load char \"X\" from typeface!");
             // reset these characters to regenerate them with the new font size
             chars.clear();
         }
