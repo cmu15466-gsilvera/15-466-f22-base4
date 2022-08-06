@@ -32,7 +32,9 @@ PlayMode::PlayMode()
     auto origin = Scene::Transform();
     camera = new Scene::Camera(&origin);
 
-    text.init();
+    left_text.init();
+    right_text.init();
+    context_text.init();
 }
 
 PlayMode::~PlayMode()
@@ -80,6 +82,7 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
 void PlayMode::update(float elapsed)
 {
 
+    context_text.set_text("The hero's journey starts here.");
     // inputs logic
     {
         glm::mat4x3 frame = camera->transform->make_local_to_parent();
@@ -93,13 +96,13 @@ void PlayMode::update(float elapsed)
         if (left.pressed && !right.pressed && can_left) {
             action_sound = Sound::play_3D(*action_sample, volume, cameraLeft, radius);
             can_left = false;
-            text.set_text("left");
         }
+        left_text.set_text(left.pressed ? "*left*" : "left");
         if (!left.pressed && right.pressed && can_right) {
             action_sound = Sound::play_3D(*action_sample, volume, cameraRight, radius);
             can_right = false;
-            text.set_text("right");
         }
+        right_text.set_text(right.pressed ? "*right*" : "right");
     }
 
     { // update listener to camera position:
@@ -155,11 +158,28 @@ void PlayMode::draw(glm::uvec2 const& drawable_size)
             glm::u8vec4(0xff, 0xff, 0xff, 0x00));
     }
 
+    // draw left text
     {
-        float x = (float)drawable_size.x * (200.0f / 1280.0f);
-        float y = (float)drawable_size.y * (200.0f / 720.0f);
-        float width = (float)drawable_size.x * (800.0f / 1280.0f);
-        text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+        float x = drawable_size.x * 0.2f;
+        float y = drawable_size.y * 0.2f;
+        float width = drawable_size.x * 0.75f;
+        left_text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+    }
+
+    // draw right text
+    {
+        float x = drawable_size.x * 0.8f;
+        float y = drawable_size.y * 0.2f;
+        float width = drawable_size.x * 0.75f;
+        right_text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+    }
+
+    // draw center text
+    {
+        float x = drawable_size.x * 0.5f;
+        float y = drawable_size.y * 0.6f;
+        float width = drawable_size.x * 0.75f;
+        context_text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     GL_ERRORS();

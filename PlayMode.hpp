@@ -28,7 +28,7 @@ struct PlayMode : Mode {
     } left, right, select;
     bool can_right, can_left;
 
-    Text text;
+    Text context_text, left_text, right_text;
 
     // hexapod leg to wobble:
     glm::quat hip_base_rotation;
