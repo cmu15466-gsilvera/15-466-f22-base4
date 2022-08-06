@@ -42,25 +42,8 @@ Load<Sound::Sample> action_sample(LoadTagDefault, []() -> Sound::Sample const* {
 PlayMode::PlayMode()
     : scene(*hexapod_scene)
 {
-    // get pointers to leg for convenience:
-    for (auto& transform : scene.transforms) {
-        if (transform.name == "Hip.FL")
-            hip = &transform;
-        else if (transform.name == "UpperLeg.FL")
-            upper_leg = &transform;
-        else if (transform.name == "LowerLeg.FL")
-            lower_leg = &transform;
-    }
-    if (hip == nullptr)
-        throw std::runtime_error("Hip not found.");
-    if (upper_leg == nullptr)
-        throw std::runtime_error("Upper leg not found.");
-    if (lower_leg == nullptr)
-        throw std::runtime_error("Lower leg not found.");
-
-    hip_base_rotation = hip->rotation;
-    upper_leg_base_rotation = upper_leg->rotation;
-    lower_leg_base_rotation = lower_leg->rotation;
+    // load the choice graph
+    auto graph = data_path(choice_graph);
 
     // get pointer to camera for convenience:
     if (scene.cameras.size() != 1)

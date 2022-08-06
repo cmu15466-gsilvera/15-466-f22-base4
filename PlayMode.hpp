@@ -19,6 +19,7 @@ struct PlayMode : Mode {
     virtual void draw(glm::uvec2 const& drawable_size) override;
 
     //----- game state -----
+    const std::string choice_graph = "choice-graph.txt";
 
     // input tracking:
     struct Button {
@@ -33,9 +34,6 @@ struct PlayMode : Mode {
     Text text;
 
     // hexapod leg to wobble:
-    Scene::Transform* hip = nullptr;
-    Scene::Transform* upper_leg = nullptr;
-    Scene::Transform* lower_leg = nullptr;
     glm::quat hip_base_rotation;
     glm::quat upper_leg_base_rotation;
     glm::quat lower_leg_base_rotation;
