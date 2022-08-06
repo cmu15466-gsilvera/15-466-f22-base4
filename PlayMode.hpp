@@ -28,9 +28,6 @@ struct PlayMode : Mode {
     } left, right, select;
     bool can_right, can_left;
 
-    // local copy of the game scene (so code can change it during gameplay):
-    Scene scene;
-
     Text text;
 
     // hexapod leg to wobble:
