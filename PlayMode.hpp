@@ -30,14 +30,6 @@ struct PlayMode : Mode {
 
     Text context_text, left_text, right_text;
 
-    // hexapod leg to wobble:
-    glm::quat hip_base_rotation;
-    glm::quat upper_leg_base_rotation;
-    glm::quat lower_leg_base_rotation;
-    float wobble = 0.0f;
-
-    glm::vec3 get_leg_tip_position();
-
     // music coming from the tip of the leg (as a demonstration):
     std::shared_ptr<Sound::PlayingSample> action_sound;
 

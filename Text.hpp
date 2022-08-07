@@ -202,7 +202,23 @@ struct Text {
         if (glyph_info == nullptr) {
             throw std::runtime_error("Unable to get glyph info from buffer!");
         }
-        float char_x = pos.x;
+
+        // calculate the final width of the text glyphs
+        float final_width = 0.f;
+        for (unsigned int i = 0; i < num_chars; i++) {
+            hb_codepoint_t char_req = glyph_info[i].codepoint;
+            if (chars.find(char_req) == chars.end()) { // not already loaded
+                Character ch = Character::Load(char_req, typeface);
+                chars.insert(std::pair<hb_codepoint_t, Character>(char_req, ch));
+            }
+
+            const Character& ch = chars[char_req];
+
+            // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            final_width += (ch.Advance >> 6) * ss_scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+        }
+
+        float char_x = pos.x - final_width / 2.f;
         float char_y = pos.y;
 
         // this loop was taken almost verbatim from https://learnopengl.com/In-Practice/Text-Rendering
