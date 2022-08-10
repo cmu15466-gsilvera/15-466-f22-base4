@@ -25,9 +25,6 @@ Load<Sound::Sample> action_sample(LoadTagDefault, []() -> Sound::Sample const* {
 
 PlayMode::PlayMode()
 {
-    // load the choice graph
-    auto graph = data_path(choice_graph);
-
     // get pointer to camera for convenience:
     auto origin = Scene::Transform();
     camera = new Scene::Camera(&origin);

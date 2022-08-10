@@ -64,9 +64,9 @@ struct Character {
 };
 
 struct Text {
-    const std::string text_file = "metalang.ttf";
-    float font_size = 64.f;
-    float font_scale = 64.f; // number of units per pixel
+    const std::string text_file = "RobotTeacher.ttf";
+    float font_size = 96.f;
+    float font_scale = 96.f; // number of units per pixel
 
     FT_Face typeface;
 
@@ -233,7 +233,7 @@ struct Text {
             final_width += (ch.Advance >> 6) * ss_scale; // bitshift by 6 to get value in pixels (2^6 = 64)
         }
 
-        float char_x = pos.x - final_width / 2.f;
+        float char_x = pos.x - final_width / 2.f; // horizontally centered
         float char_y = pos.y;
 
         // this loop was taken almost verbatim from https://learnopengl.com/In-Practice/Text-Rendering

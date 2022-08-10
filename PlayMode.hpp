@@ -19,9 +19,6 @@ struct PlayMode : Mode {
     virtual void update(float elapsed) override;
     virtual void draw(glm::uvec2 const& drawable_size) override;
 
-    //----- game state -----
-    const std::string choice_graph = "choice-graph.txt";
-
     // input tracking:
     struct Button {
         uint8_t downs = 0;
