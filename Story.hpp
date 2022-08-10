@@ -20,10 +20,10 @@ struct State {
 
 struct Story {
     std::vector<State> story_graph = {
-        /* 0 */ { State("The hero's journey begins here", { "Play", 1 }, { "Exit", 0 }) },
-        /* 1 */ { State("You enter a dark cave and are preparing to explore.", { "Pick up sword", 2 }, { "Pick up shield", 3 }) },
-        /* 2 */ { State("You are attacked by a troll", { "game over l", 0 }, { "game over r", 0 }) },
-        /* 3 */ { State("You fall to your death.", { "game over l", 0 }, { "game over r", 0 }) },
+        /* 0 */ { "The hero's journey begins here", { "Play", 1 }, { "Exit", 0 } },
+        /* 1 */ { "You enter a dark cave and are preparing to explore.", { "Pick up sword", 2 }, { "Pick up shield", 3 } },
+        /* 2 */ { "You are attacked by a troll", { "game over l", 0 }, { "game over r", 0 } },
+        /* 3 */ { "You fall to your death.", { "game over l", 0 }, { "game over r", 0 } },
     };
     int state_id = 0;
 };
