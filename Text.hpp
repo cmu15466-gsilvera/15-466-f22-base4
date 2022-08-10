@@ -80,6 +80,9 @@ struct Text {
     GLuint VAO = 0;
     GLuint VBO = 0;
 
+    // for actual text content
+    std::string text_content;
+
     // using hb_codepoint_t as the codepoint type from hb_buffer_get_glyph_positions
     std::map<hb_codepoint_t, Character> chars;
 
@@ -146,7 +149,7 @@ struct Text {
         }
     }
 
-    void set_text(const std::string& new_text)
+    void update_buffer(const std::string& new_text)
     {
         /// TODO add more public setters
         if (hb_buffer != nullptr) {
@@ -161,6 +164,18 @@ struct Text {
             throw std::runtime_error("Harfbuzz typeface is null!");
         }
         hb_shape(hb_typeface, hb_buffer, NULL, 0);
+    }
+
+    void set_text(const std::string& new_text)
+    {
+        text_content = new_text;
+        update_buffer(text_content);
+    }
+
+    void highlight()
+    {
+        // show some effect for highlighting
+        update_buffer("**" + text_content + "**");
     }
 
     void set_font_size(float new_font_size, float new_font_scale, bool override = false)

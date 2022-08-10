@@ -82,7 +82,14 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
 void PlayMode::update(float elapsed)
 {
 
-    context_text.set_text("The hero's journey starts here.");
+    // state logic
+    {
+        State s = story.story_graph[story.state_id];
+        context_text.set_text(s.context);
+        left_text.set_text(s.left.text);
+        right_text.set_text(s.right.text);
+    }
+
     // inputs logic
     {
         glm::mat4x3 frame = camera->transform->make_local_to_parent();
@@ -96,13 +103,36 @@ void PlayMode::update(float elapsed)
         if (left.pressed && !right.pressed && can_left) {
             action_sound = Sound::play_3D(*action_sample, volume, cameraLeft, radius);
             can_left = false;
+            selection = UserSelection::LEFT;
         }
-        left_text.set_text(left.pressed ? "*left*" : "left");
         if (!left.pressed && right.pressed && can_right) {
             action_sound = Sound::play_3D(*action_sample, volume, cameraRight, radius);
             can_right = false;
+            selection = UserSelection::RIGHT;
         }
-        right_text.set_text(right.pressed ? "*right*" : "right");
+        if (select.pressed) {
+            auto current_state = story.story_graph[story.state_id];
+            switch (selection) {
+            case UserSelection::LEFT:
+                story.state_id = current_state.left.next;
+                break;
+            case UserSelection::RIGHT:
+                story.state_id = current_state.right.next;
+                break;
+            default: // UserSelection::NONE
+                break;
+            }
+            selection = UserSelection::NONE; // reset selection
+        }
+    }
+
+    // update visual text aspect
+    {
+        if (selection == UserSelection::RIGHT) {
+            right_text.highlight();
+        } else if (selection == UserSelection::LEFT) {
+            left_text.highlight();
+        }
     }
 
     { // update listener to camera position:

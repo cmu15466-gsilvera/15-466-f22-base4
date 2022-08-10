@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "Sound.hpp"
+#include "Story.hpp"
 #include "Text.hpp"
 
 #include <glm/glm.hpp>
@@ -27,6 +28,15 @@ struct PlayMode : Mode {
         uint8_t pressed = 0;
     } left, right, select;
     bool can_right, can_left;
+
+    enum UserSelection {
+        NONE = 0,
+        RIGHT = 1,
+        LEFT = 2
+    };
+    enum UserSelection selection = UserSelection::NONE;
+
+    Story story;
 
     Text context_text, left_text, right_text;
 
