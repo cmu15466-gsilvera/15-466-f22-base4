@@ -78,13 +78,12 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
 
 void PlayMode::update(float elapsed)
 {
-
     // state logic
     {
         State s = story.story_graph[story.state_id];
         context_text.set_text(s.context);
-        left_text.set_text(s.left.text);
-        right_text.set_text(s.right.text);
+        left_text.set_text(s.left_text);
+        right_text.set_text(s.right_text);
     }
 
     // inputs logic
@@ -111,14 +110,15 @@ void PlayMode::update(float elapsed)
             auto current_state = story.story_graph[story.state_id];
             switch (selection) {
             case UserSelection::LEFT:
-                story.state_id = current_state.left.next;
+                story.state_id = current_state.left(story.player);
                 break;
             case UserSelection::RIGHT:
-                story.state_id = current_state.right.next;
+                story.state_id = current_state.right(story.player);
                 break;
             default: // UserSelection::NONE
                 break;
             }
+            story.player.print();
             selection = UserSelection::NONE; // reset selection
         }
     }
