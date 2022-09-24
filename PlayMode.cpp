@@ -134,9 +134,9 @@ void PlayMode::update(float elapsed)
 
     { // update listener to camera position:
         glm::mat4x3 frame = camera->transform->make_local_to_parent();
-        glm::vec3 right = frame[0];
+        glm::vec3 right_ = frame[0];
         glm::vec3 at = frame[3];
-        Sound::listener.set_position_right(at, right, 1.0f / 60.0f);
+        Sound::listener.set_position_right(at, right_, 1.0f / 60.0f);
     }
 
     // reset button press counters:
