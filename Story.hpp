@@ -85,7 +85,7 @@ struct Story {
         /* 7 */ { "Booby traps appear! You take an arrow to the knee!.", "Continue forward", "Go back", //
             [&](PlayerState& p) { p.isDamaged = true; return 8; }, //
             [&](PlayerState& p) { p.isDamaged = true; return 2; } },
-        /* 8 */ { "At the end of this tunnel you see more items", "Get medicine (heal wounds)", "Get flower", //
+        /* 8 */ { "At the end of this tunnel you see more items", "Pick up medicine", "Pick up flower", //
             [&](PlayerState& p) { if (p.isDamaged) {p.isDamaged = false;} else {p.hasMedicine = true; }; return 9; }, //
             [&](PlayerState& p) { p.hasFlower = true; return 9; } },
         /* 9 */ { "You see a well and a path forward", "Go down well", "Go down path", //

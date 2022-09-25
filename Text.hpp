@@ -68,6 +68,10 @@ struct Text {
     float font_size = 96.f;
     float font_scale = 96.f; // number of units per pixel
 
+    const float anim_time = 1.0f; // time (seconds) to complete animation
+    float time = 0.f; // current time for new text
+
+    // freetype typeface
     FT_Face typeface;
 
     // harfbuzz for shaping the text
@@ -172,6 +176,11 @@ struct Text {
         update_buffer(text_content);
     }
 
+    void reset_time()
+    {
+        time = 0.f;
+    }
+
     void highlight()
     {
         // show some effect for highlighting
@@ -192,7 +201,7 @@ struct Text {
         }
     }
 
-    void draw(const glm::vec2& drawable_size, float width, const glm::vec2& pos, float ss_scale, glm::vec3 color)
+    void draw(float dt, const glm::vec2& drawable_size, float width, const glm::vec2& pos, float ss_scale, glm::vec3 color)
     {
         // drawable_size - window size
         // width - how wide the displayed string gets to be
@@ -236,8 +245,12 @@ struct Text {
         float char_x = pos.x - final_width / 2.f; // horizontally centered
         float char_y = pos.y;
 
+        // handle animation (only draw fraction of total depending on time)
+        time += dt;
+        float amnt = std::min(time / anim_time, 1.f);
+
         // this loop was taken almost verbatim from https://learnopengl.com/In-Practice/Text-Rendering
-        for (unsigned int i = 0; i < num_chars; i++) {
+        for (unsigned int i = 0; i < static_cast<int>(amnt * num_chars); i++) {
             hb_codepoint_t char_req = glyph_info[i].codepoint;
             if (chars.find(char_req) == chars.end()) { // not already loaded
                 Character ch = Character::Load(char_req, typeface);

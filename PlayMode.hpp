@@ -35,6 +35,7 @@ struct PlayMode : Mode {
 
     Story story;
     int selections_made = 0;
+    float dt = 0.f; // deltatime (elapsed)
 
     Text context_text, left_text, right_text;
 

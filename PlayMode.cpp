@@ -67,6 +67,10 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
         } else if (evt.key.keysym.sym == SDLK_RETURN) {
             select.pressed = false;
             story.player.print(selections_made);
+            // reset time for animations to begin again
+            context_text.reset_time();
+            left_text.reset_time();
+            right_text.reset_time();
             return true;
         }
     }
@@ -76,6 +80,7 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
 
 void PlayMode::update(float elapsed)
 {
+    dt = elapsed; // keep track of dt
     // state logic
     {
         State s = story.story_graph[story.state_id];
@@ -179,7 +184,7 @@ void PlayMode::draw(glm::uvec2 const& drawable_size)
         float x = drawable_size.x * 0.2f;
         float y = drawable_size.y * 0.2f;
         float width = drawable_size.x * 0.75f;
-        left_text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+        left_text.draw(dt, drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     // draw right text
@@ -187,7 +192,7 @@ void PlayMode::draw(glm::uvec2 const& drawable_size)
         float x = drawable_size.x * 0.8f;
         float y = drawable_size.y * 0.2f;
         float width = drawable_size.x * 0.75f;
-        right_text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+        right_text.draw(dt, drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     // draw center text
@@ -195,7 +200,7 @@ void PlayMode::draw(glm::uvec2 const& drawable_size)
         float x = drawable_size.x * 0.5f;
         float y = drawable_size.y * 0.6f;
         float width = drawable_size.x * 0.75f;
-        context_text.draw(drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+        context_text.draw(dt, drawable_size, width, glm::vec2(x, y), 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     GL_ERRORS();
