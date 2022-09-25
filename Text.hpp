@@ -64,9 +64,9 @@ struct Character {
 };
 
 struct Text {
-    const std::string text_file = "RobotTeacher.ttf";
-    float font_size = 96.f;
-    float font_scale = 96.f; // number of units per pixel
+    const std::string text_file = "BungeeSpice-Regular.ttf";
+    float font_size = 64.f;
+    float font_scale = 64.f; // number of units per pixel
 
     const float anim_time = 1.0f; // time (seconds) to complete animation
     float time = 0.f; // current time for new text
