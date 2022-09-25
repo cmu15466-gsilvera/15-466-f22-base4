@@ -19,10 +19,6 @@ Load<MeshBuffer> hexapod_meshes(LoadTagDefault, []() -> MeshBuffer const* {
     return ret;
 });
 
-Load<Sound::Sample> action_sample(LoadTagDefault, []() -> Sound::Sample const* {
-    return new Sound::Sample(data_path("alien.opus"));
-});
-
 PlayMode::PlayMode()
 {
     // get pointer to camera for convenience:
@@ -56,6 +52,7 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
         } else if (evt.key.keysym.sym == SDLK_RETURN) {
             select.downs += 1;
             select.pressed = true;
+            selections_made++;
             return true;
         }
     } else if (evt.type == SDL_KEYUP) {
@@ -69,6 +66,7 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
             return true;
         } else if (evt.key.keysym.sym == SDLK_RETURN) {
             select.pressed = false;
+            story.player.print(selections_made);
             return true;
         }
     }
@@ -88,21 +86,13 @@ void PlayMode::update(float elapsed)
 
     // inputs logic
     {
-        glm::mat4x3 frame = camera->transform->make_local_to_parent();
-        glm::vec3 cam_right = frame[0];
-        // glm::vec3 up = frame[1];
-        // glm::vec3 forward = -frame[2];
-        glm::vec3 cameraRight = camera->transform->position + cam_right * 2.f;
-        glm::vec3 cameraLeft = camera->transform->position + cam_right * -2.f;
-        const float volume = 2.f;
-        const float radius = 0.1f;
         if (left.pressed && !right.pressed && can_left) {
-            action_sound = Sound::play_3D(*action_sample, volume, cameraLeft, radius);
+            // action_sound = Sound::play_3D(*action_sample, volume, cameraLeft, radius);
             can_left = false;
             selection = UserSelection::LEFT;
         }
         if (!left.pressed && right.pressed && can_right) {
-            action_sound = Sound::play_3D(*action_sample, volume, cameraRight, radius);
+            // action_sound = Sound::play_3D(*action_sample, volume, cameraRight, radius);
             can_right = false;
             selection = UserSelection::RIGHT;
         }
@@ -118,7 +108,6 @@ void PlayMode::update(float elapsed)
             default: // UserSelection::NONE
                 break;
             }
-            story.player.print();
             selection = UserSelection::NONE; // reset selection
         }
     }

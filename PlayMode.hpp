@@ -34,6 +34,7 @@ struct PlayMode : Mode {
     enum UserSelection selection = UserSelection::NONE;
 
     Story story;
+    int selections_made = 0;
 
     Text context_text, left_text, right_text;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <sstream> // ostringstream
 #include <string>
 #include <unordered_map>
 
@@ -13,9 +14,34 @@ struct PlayerState {
     bool hasTorch = false;
     bool hasRope = false;
     int treasure = 0;
-    void print() const
+    void print(int selections_made = 0) const
     {
-        std::cout << "Sword: " << hasSword << " Shield: " << hasShield << " isDamaged: " << isDamaged << " hasMedicine: " << hasMedicine << " hasFlower: " << hasFlower << " hasTorch: " << hasTorch << " hasRope: " << hasRope << " numTreasure: " << treasure << std::endl;
+        std::ostringstream oss;
+        oss << "Selection: " << selections_made << " | ";
+        oss << "Inventory: {";
+        std::vector<std::string> inventory;
+        if (hasSword)
+            inventory.push_back("sword");
+        if (hasShield)
+            inventory.push_back("shield");
+        if (hasMedicine)
+            inventory.push_back("medicine");
+        if (hasFlower)
+            inventory.push_back("flower");
+        if (hasTorch)
+            inventory.push_back("torch");
+        if (hasRope)
+            inventory.push_back("rope");
+        for (int i = 0; i < inventory.size(); i++) {
+            oss << inventory[i];
+            if (i < inventory.size() - 1)
+                oss << ", ";
+        }
+        oss << "}";
+        if (isDamaged)
+            oss << " | is hurt!";
+        oss << " | Treasure: " << treasure;
+        std::cout << oss.str() << std::endl;
     }
 };
 
@@ -36,7 +62,7 @@ struct State {
 struct Story {
     std::vector<State> story_graph = {
         /* 0 */ { "The hero's journey begins here", "Exit", "Play",
-            [&](PlayerState& p) { return 0; },
+            [&](PlayerState& p) { exit(0); return 0; },
             [&](PlayerState& p) { return 1; } },
         /* 1 */ { "You enter a dark cave and are preparing to explore.", "Pick up shield", "Pick up sword", //
             [&](PlayerState& p) { p.hasShield = true; return 2; }, //
@@ -69,7 +95,7 @@ struct Story {
             [&](PlayerState& p) { if (p.hasMedicine) {p.hasMedicine = false; p.isDamaged = false;return 12;} else {return 10;}; }, //
             [&](PlayerState& p) { return 11; } },
         /* 11 */ { "You tried getting up but died.", "Exit", "Retry", //
-            [&](PlayerState& p) { return 0; }, //
+            [&](PlayerState& p) { exit(0); return 0; }, //
             [&](PlayerState& p) { return 0; } },
         /* 12 */ { "You are healed and see a shiny object", "Pick up treasure", "Try to climb out", //
             [&](PlayerState& p) { p.treasure++; return 13; }, //
@@ -91,7 +117,7 @@ struct Story {
             [&](PlayerState& p) { return p.hasSword ? 21 : 17; } }, //
         /* 18 */ { "You died to your goblin-wounds", "Retry", "Exit", //
             [&](PlayerState& p) { return 0; }, //
-            [&](PlayerState& p) { return 0; } }, //
+            [&](PlayerState& p) { exit(0); return 0; } }, //
         /* 19 */ { "You see a large tree with a chest at the top", "Climb tree", "Burn down tree", //
             [&](PlayerState& p) { return p.hasRope ? 20 : 19; }, //
             [&](PlayerState& p) { return p.hasTorch ? 22 : 19; } }, //
@@ -105,7 +131,7 @@ struct Story {
             [&](PlayerState& p) { return p.hasMedicine ? 23 : 18; }, //
             [&](PlayerState& p) { return 18; } }, //
         /* 23 */ { "You escaped!", "Exit", "Retry", // TODO: add number of treasures
-            [&](PlayerState& p) { return 0; }, //
+            [&](PlayerState& p) { exit(0); return 0; }, //
             [&](PlayerState& p) { return 0; } }, //
         /* 24 */ { "Goblins are friendly", "Offer flower", "Escape", //
             [&](PlayerState& p) { return p.hasFlower ? 25 : 24; }, //
