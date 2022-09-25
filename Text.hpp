@@ -271,6 +271,10 @@ struct Text {
             char_x += (ch.Advance >> 6) * ss_scale; // bitshift by 6 to get value in pixels (2^6 = 64)
 
             /// TODO: logic for newline? (reset x, increase y?)
+            // if ((char)char_req == '\0') {
+            //     char_x = pos.x - final_width / 2.f;
+            //     char_y += ch.Size.y;
+            // }
         }
 
         // reset openGL stuff

@@ -67,10 +67,10 @@ struct Story {
         /* 1 */ { "You enter a dark cave and are preparing to explore.", "Pick up shield", "Pick up sword", //
             [&](PlayerState& p) { p.hasShield = true; return 2; }, //
             [&](PlayerState& p) { p.hasSword = true; return 2; } },
-        /* 2 */ { "You venture further and see 2 tunnels.", "Enter the spikey vines tunnel", "Enter the empty tunnel", //
+        /* 2 */ { "You venture further and see 2 tunnels.", "Spikey vines tunnel", "Dark empty tunnel", //
             [&](PlayerState& p) { return 3; }, //
             [&](PlayerState& p) { return (p.hasShield) ? 6 : 7; } },
-        /* 3 */ { "You get blocked by the vines.", "Cut through the vines (sword)", "Go back", //
+        /* 3 */ { "You get blocked by the vines.", "Cut through vines", "Go back", //
             [&](PlayerState& p) { return (p.hasSword) ? 4 : 2; }, //
             [&](PlayerState& p) { return 2; } }, // always go back
         /* 4 */ { "You see a rope and torch on the ground", "Pick up rope", "Pick up torch", //
@@ -85,7 +85,7 @@ struct Story {
         /* 7 */ { "Booby traps appear! You take an arrow to the knee!.", "Continue forward", "Go back", //
             [&](PlayerState& p) { p.isDamaged = true; return 8; }, //
             [&](PlayerState& p) { p.isDamaged = true; return 2; } },
-        /* 8 */ { "At the end of this tunnel you see more items", "Pick up medicine (heal wounds)", "Pick up flower", //
+        /* 8 */ { "At the end of this tunnel you see more items", "Get medicine (heal wounds)", "Get flower", //
             [&](PlayerState& p) { if (p.isDamaged) {p.isDamaged = false;} else {p.hasMedicine = true; }; return 9; }, //
             [&](PlayerState& p) { p.hasFlower = true; return 9; } },
         /* 9 */ { "You see a well and a path forward", "Go down well", "Go down path", //
