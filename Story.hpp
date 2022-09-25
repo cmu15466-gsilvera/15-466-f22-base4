@@ -14,6 +14,18 @@ struct PlayerState {
     bool hasTorch = false;
     bool hasRope = false;
     int treasure = 0;
+    void reset()
+    {
+        hasSword = false;
+        hasShield = false;
+        isDamaged = false;
+        hasMedicine = false;
+        hasFlower = false;
+        hasTorch = false;
+        hasRope = false;
+        treasure = 0;
+    }
+
     void print(int selections_made = 0) const
     {
         std::ostringstream oss;
@@ -96,7 +108,7 @@ struct Story {
             [&](PlayerState& p) { return 11; } },
         /* 11 */ { "You tried getting up but died.", "Exit", "Retry", //
             [&](PlayerState& p) { exit(0); return 0; }, //
-            [&](PlayerState& p) { return 0; } },
+            [&](PlayerState& p) { p.reset(); return 0; } },
         /* 12 */ { "You are healed and see a shiny object", "Pick up treasure", "Try to climb out", //
             [&](PlayerState& p) { p.treasure++; return 13; }, //
             [&](PlayerState& p) { return 13; } },
@@ -116,7 +128,7 @@ struct Story {
             [&](PlayerState& p) { return p.hasRope ? 20 : 17; }, //
             [&](PlayerState& p) { return p.hasSword ? 21 : 17; } }, //
         /* 18 */ { "You died to your goblin-wounds", "Retry", "Exit", //
-            [&](PlayerState& p) { return 0; }, //
+            [&](PlayerState& p) { p.reset(); return 0; }, //
             [&](PlayerState& p) { exit(0); return 0; } }, //
         /* 19 */ { "You see a large tree with a chest at the top", "Climb tree", "Burn down tree", //
             [&](PlayerState& p) { return p.hasRope ? 20 : 19; }, //
@@ -132,7 +144,7 @@ struct Story {
             [&](PlayerState& p) { return 18; } }, //
         /* 23 */ { "You escaped!", "Exit", "Retry", // TODO: add number of treasures
             [&](PlayerState& p) { exit(0); return 0; }, //
-            [&](PlayerState& p) { return 0; } }, //
+            [&](PlayerState& p) { p.reset(); return 0; } }, //
         /* 24 */ { "Goblins are friendly", "Offer flower", "Escape", //
             [&](PlayerState& p) { return p.hasFlower ? 25 : 24; }, //
             [&](PlayerState& p) { return 23; } }, //

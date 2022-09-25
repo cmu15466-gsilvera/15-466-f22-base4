@@ -53,6 +53,10 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
             select.downs += 1;
             select.pressed = true;
             selections_made++;
+            // reset time for animations to begin again
+            context_text.reset_time();
+            left_text.reset_time();
+            right_text.reset_time();
             return true;
         }
     } else if (evt.type == SDL_KEYUP) {
@@ -67,10 +71,6 @@ bool PlayMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size)
         } else if (evt.key.keysym.sym == SDLK_RETURN) {
             select.pressed = false;
             story.player.print(selections_made);
-            // reset time for animations to begin again
-            context_text.reset_time();
-            left_text.reset_time();
-            right_text.reset_time();
             return true;
         }
     }
