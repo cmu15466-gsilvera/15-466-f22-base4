@@ -72,6 +72,7 @@ struct State {
 };
 
 struct Story {
+#define END_STATE 27 + p.treasure // whatever the last state is + treasure to account for the next possible states
     std::vector<State> story_graph = {
         /* 0 */ { "The hero's journey begins here", "Exit", "Play",
             [&](PlayerState& p) { exit(0); return 0; },
@@ -99,14 +100,14 @@ struct Story {
             [&](PlayerState& p) { p.isDamaged = true; return 2; } },
         /* 8 */ { "At the end of this tunnel you see more items", "Pick up medicine", "Pick up flower", //
             [&](PlayerState& p) { if (p.isDamaged) {p.isDamaged = false;} else {p.hasMedicine = true; }; return 9; }, //
-            [&](PlayerState& p) { p.hasFlower = true; return 9; } },
+            [&](PlayerState& p) { if (p.isDamaged) {return 11;} p.hasFlower = true; return 9; } },
         /* 9 */ { "You see a well and a path forward", "Go down well", "Go down path", //
             [&](PlayerState& p) { return 10; }, //
             [&](PlayerState& p) { return 14; } },
         /* 10 */ { "You fall down and hurt yourself", "Use medicine", "Get up", //
             [&](PlayerState& p) { if (p.hasMedicine) {p.hasMedicine = false; p.isDamaged = false;return 12;} else {return 10;}; }, //
             [&](PlayerState& p) { return 11; } },
-        /* 11 */ { "You tried getting up but died.", "Exit", "Retry", //
+        /* 11 */ { "You tried but died to your wounds", "Exit", "Retry", //
             [&](PlayerState& p) { exit(0); return 0; }, //
             [&](PlayerState& p) { p.reset(); return 0; } },
         /* 12 */ { "You are healed and see a shiny object", "Pick up treasure", "Try to climb out", //
@@ -122,8 +123,8 @@ struct Story {
             [&](PlayerState& p) { if (p.hasMedicine) {p.hasMedicine = false; return 17;} else{return 18;}; }, //
             [&](PlayerState& p) { return 18; } }, //
         /* 16 */ { "Your torch scares the goblins but gets extinguished!", "Continue forward", "Continue forward", //
-            [&](PlayerState& p) { p.hasTorch = false; return 19; }, //
-            [&](PlayerState& p) { p.hasTorch = false; return 19; } }, //
+            [&](PlayerState& p) { p.hasTorch = false; return 17; }, //
+            [&](PlayerState& p) { p.hasTorch = false; return 17; } }, //
         /* 17 */ { "You see a large tree with a chest at the top", "Climb tree", "Cut down tree", //
             [&](PlayerState& p) { return p.hasRope ? 20 : 17; }, //
             [&](PlayerState& p) { return p.hasSword ? 21 : 17; } }, //
@@ -134,27 +135,36 @@ struct Story {
             [&](PlayerState& p) { return p.hasRope ? 20 : 19; }, //
             [&](PlayerState& p) { return p.hasTorch ? 22 : 19; } }, //
         /* 20 */ { "You climb the tree and find treasure!", "Leave cave", "Leave cave", //
-            [&](PlayerState& p) { p.treasure++; return 0; }, //
-            [&](PlayerState& p) { p.treasure++; return 0; } }, //
+            [&](PlayerState& p) { p.treasure++; return END_STATE; }, //
+            [&](PlayerState& p) { p.treasure++; return END_STATE; } }, //
         /* 21 */ { "You cut down the tree and goblins attack!", "Heal and escape", "Try to escape", //
-            [&](PlayerState& p) { return p.hasMedicine ? 23 : 18; }, //
+            [&](PlayerState& p) { return p.hasMedicine ? END_STATE : 18; }, //
             [&](PlayerState& p) { return 18; } }, //
         /* 22 */ { "You burn down the tree and goblins attack!", "Heal and escape", "Try to escape", //
-            [&](PlayerState& p) { return p.hasMedicine ? 23 : 18; }, //
+            [&](PlayerState& p) { return p.hasMedicine ? END_STATE : 18; }, //
             [&](PlayerState& p) { return 18; } }, //
         /* 23 */ { "You escaped!", "Exit", "Retry", // TODO: add number of treasures
             [&](PlayerState& p) { exit(0); return 0; }, //
             [&](PlayerState& p) { p.reset(); return 0; } }, //
         /* 24 */ { "Goblins are friendly", "Offer flower", "Escape", //
             [&](PlayerState& p) { return p.hasFlower ? 25 : 24; }, //
-            [&](PlayerState& p) { return 23; } }, //
+            [&](PlayerState& p) { return END_STATE; } }, //
         /* 25 */ { "Goblins give you treasure!", "Leave", "Leave", //
-            [&](PlayerState& p) { return 23; }, //
-            [&](PlayerState& p) { return 23; } }, //
-        /* 26 */ {
-            "The goblins are scared of your sword", "Discard sword", "Attack with sword", //
+            [&](PlayerState& p) { p.treasure++; return END_STATE; }, //
+            [&](PlayerState& p) { p.treasure++; return END_STATE; } }, //
+        /* 26 */ { "The goblins are scared of your sword", "Discard sword", "Attack with sword", //
             [&](PlayerState& p) { return 17; }, //
-            [&](PlayerState& p) { return 15; }, //
+            [&](PlayerState& p) { return 15; } }, //
+        /* 27 */ { "You escaped the cave with 0 treasure", "Exit", "Retry", //
+            [&](PlayerState& p) { exit(0); return 0; }, //
+            [&](PlayerState& p) { p.reset(); return 0; } },
+        /* 28 */ { "Congratulations you escaped with 1 treasure", "Exit", "Retry", //
+            [&](PlayerState& p) { exit(0); return 0; }, //
+            [&](PlayerState& p) { p.reset(); return 0; } },
+        /* 29 */ {
+            "Congratulations you escaped with 2 treasures", "Exit", "Retry", //
+            [&](PlayerState& p) { exit(0); return 0; }, //
+            [&](PlayerState& p) { p.reset(); return 0; }, //
         }
 
     };
